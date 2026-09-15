@@ -13,6 +13,7 @@ const state = {
   step: 1,
   taskMode: 'config',
   phrase: '',
+  demoTimers: [],
   activity: [
     { name: '价格策略校验', meta: '4 个商品 · 已完成', time: '09:18', status: 'done' },
     { name: '合作伙伴授权检查', meta: '2 个商品 · 等待确认', time: '昨天', status: 'pending' },
@@ -28,6 +29,15 @@ const steps = [...document.querySelectorAll('.step')];
 function updateDemoStatus(title, detail) {
   byId('demo-status').textContent = title;
   byId('demo-status-detail').textContent = detail;
+}
+
+function clearDemoTimers() {
+  state.demoTimers.forEach((timer) => window.clearTimeout(timer));
+  state.demoTimers = [];
+}
+
+function scheduleDemo(delay, callback) {
+  state.demoTimers.push(window.setTimeout(callback, delay));
 }
 
 function selectedProducts() {
@@ -109,6 +119,7 @@ function applyFilters(event) {
 }
 
 function startDemo(mode) {
+  clearDemoTimers();
   byId('keyword').value = '';
   byId('region').value = 'Asia';
   byId('status').value = 'active';
@@ -122,11 +133,31 @@ function startDemo(mode) {
   document.querySelector(`input[name="mode"][value="${mode}"]`).checked = true;
   updateModeFields();
   updateDemoStatus(
-    mode === 'config' ? '经营配置已就绪' : '授权分发已就绪',
-    `已筛选并选中 ${state.filteredProducts.length} 个亚洲单国家商品。点击“对已选商品批量操作”继续。`,
+    mode === 'config' ? '经营配置正在自动执行' : '授权分发正在自动执行',
+    `已筛选并选中 ${state.filteredProducts.length} 个亚洲单国家商品，即将进入批量操作流程。`,
   );
-  showToast('演示环境已准备', `已选中 ${state.filteredProducts.length} 个商品，可继续执行${mode === 'config' ? '经营配置' : '授权分发'}。`);
+  showToast('自动演示已启动', '将依次展示筛选、配置、预览确认和任务完成。');
   byId('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  scheduleDemo(550, () => {
+    openDialog();
+    updateDemoStatus('正在确认影响范围', '已打开批量操作弹窗，正在核对目标商品和 SKU 数量。');
+  });
+  scheduleDemo(1450, () => {
+    updateStep(2);
+    updateDemoStatus('正在设置操作参数', `正在填充${modeLabel()}所需的模拟参数。`);
+  });
+  scheduleDemo(2400, () => {
+    renderPreview();
+    updateStep(3);
+    updateDemoStatus('正在生成执行预览', '系统已展示影响范围和动态确认短语。');
+  });
+  scheduleDemo(3300, () => {
+    byId('confirmation-input').value = state.phrase;
+    byId('confirmation-input').dispatchEvent(new Event('input', { bubbles: true }));
+    updateDemoStatus('正在提交异步任务', '动态确认短语校验通过，正在创建批量任务。');
+  });
+  scheduleDemo(3950, submitTask);
 }
 
 function resetFilters() {

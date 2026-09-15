@@ -25,6 +25,11 @@ const batchDialog = byId('batch-dialog');
 const panels = [...document.querySelectorAll('[data-panel]')];
 const steps = [...document.querySelectorAll('.step')];
 
+function updateDemoStatus(title, detail) {
+  byId('demo-status').textContent = title;
+  byId('demo-status-detail').textContent = detail;
+}
+
 function selectedProducts() {
   return products.filter((product) => state.selectedIds.has(product.id));
 }
@@ -103,6 +108,27 @@ function applyFilters(event) {
   showToast('筛选已更新', `当前命中 ${state.filteredProducts.length} 个模拟商品`);
 }
 
+function startDemo(mode) {
+  byId('keyword').value = '';
+  byId('region').value = 'Asia';
+  byId('status').value = 'active';
+  byId('scope').value = 'single';
+  applyFilters();
+
+  state.filteredProducts.forEach((product) => state.selectedIds.add(product.id));
+  renderProducts();
+
+  state.taskMode = mode;
+  document.querySelector(`input[name="mode"][value="${mode}"]`).checked = true;
+  updateModeFields();
+  updateDemoStatus(
+    mode === 'config' ? '经营配置已就绪' : '授权分发已就绪',
+    `已筛选并选中 ${state.filteredProducts.length} 个亚洲单国家商品。点击“对已选商品批量操作”继续。`,
+  );
+  showToast('演示环境已准备', `已选中 ${state.filteredProducts.length} 个商品，可继续执行${mode === 'config' ? '经营配置' : '授权分发'}。`);
+  byId('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function resetFilters() {
   byId('filter-form').reset();
   state.filteredProducts = [...products];
@@ -175,6 +201,7 @@ function openDialog() {
   byId('selected-sku-count').textContent = String(selection.reduce((total, product) => total + product.sku, 0));
   updateStep(1);
   batchDialog.showModal();
+  updateDemoStatus('正在执行批量流程', `已进入${modeLabel()}的第 1 步：确认影响范围。`);
 }
 
 function closeDialog() {
@@ -215,6 +242,7 @@ function submitTask() {
     renderProducts();
     closeDialog();
     byId('submit-task').textContent = '确认并创建任务';
+    updateDemoStatus('演示执行完成', completedMeta);
     showToast('当前批量任务 已完成', completedMeta);
   }, 850);
 
@@ -223,6 +251,8 @@ function submitTask() {
 
 byId('filter-form').addEventListener('submit', applyFilters);
 byId('reset-filters').addEventListener('click', resetFilters);
+byId('start-config-demo').addEventListener('click', () => startDemo('config'));
+byId('start-authorize-demo').addEventListener('click', () => startDemo('authorize'));
 byId('product-rows').addEventListener('change', (event) => {
   if (!event.target.matches('.row-check')) return;
   const { id } = event.target.dataset;

@@ -122,6 +122,58 @@ main {
   margin-bottom: 26px;
 }
 
+.demo-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) auto;
+  gap: 18px 28px;
+  margin-bottom: 24px;
+  padding: 21px 22px;
+  border: 1px solid #aac7d7;
+  border-left: 5px solid #176e7d;
+  background: #ffffff;
+}
+
+.demo-intro h2 {
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.demo-intro-copy > p:last-child {
+  max-width: 760px;
+  margin: 0;
+  color: #486581;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.demo-intro-actions {
+  display: grid;
+  align-content: center;
+  gap: 9px;
+  min-width: 150px;
+}
+
+.demo-progress {
+  display: grid;
+  grid-template-columns: auto minmax(180px, auto) minmax(0, 1fr);
+  gap: 10px 16px;
+  grid-column: 1 / -1;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #dce4ee;
+}
+
+.demo-progress span,
+.demo-progress small {
+  color: #627d98;
+  font-size: 12px;
+}
+
+.demo-progress strong {
+  color: #176e7d;
+  font-size: 14px;
+}
+
 .eyebrow {
   margin: 0 0 5px;
   color: #64748b;
@@ -416,6 +468,45 @@ tbody tr:hover {
   margin-top: 34px;
 }
 
+.partner-section {
+  margin-top: 34px;
+  border-top: 1px solid #d9e2ec;
+  padding-top: 25px;
+}
+
+.partner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.partner-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #dce4ee;
+  border-radius: 7px;
+  background: #ffffff;
+}
+
+.partner-card strong,
+.partner-card span {
+  display: block;
+}
+
+.partner-card strong {
+  color: #243b53;
+  font-size: 14px;
+}
+
+.partner-card div > span {
+  margin-top: 5px;
+  color: #829ab1;
+  font-size: 12px;
+}
+
 .activity-list {
   display: grid;
   gap: 0;
@@ -672,6 +763,18 @@ dialog::backdrop {
     grid-column: 1 / -1;
     justify-content: flex-end;
   }
+
+  .demo-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-intro-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .partner-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -709,7 +812,8 @@ dialog::backdrop {
   .filters,
   .form-grid,
   .scope-summary,
-  .preview-grid {
+  .preview-grid,
+  .partner-grid {
     grid-template-columns: 1fr;
   }
 
@@ -732,6 +836,19 @@ dialog::backdrop {
 
   .filter-actions .button {
     flex: 1;
+  }
+
+  .demo-intro {
+    padding: 17px;
+  }
+
+  .demo-intro-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-progress {
+    grid-template-columns: 1fr;
+    gap: 5px;
   }
 
   .step {

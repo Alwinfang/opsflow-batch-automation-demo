@@ -1,0 +1,14 @@
+{
+  "name": "opsflow-batch-automation-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "test:e2e": "node scripts/run-demo.mjs",
+    "capture": "node scripts/capture-dashboard.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0"
+  }
+}

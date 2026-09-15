@@ -150,7 +150,7 @@ main {
   display: grid;
   align-content: center;
   gap: 9px;
-  min-width: 150px;
+  min-width: 220px;
 }
 
 .demo-progress {
@@ -172,6 +172,51 @@ main {
 .demo-progress strong {
   color: #176e7d;
   font-size: 14px;
+}
+
+.pipeline-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pipeline-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #dce4ee;
+  color: #627d98;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pipeline-list span {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 10px;
+}
+
+.pipeline-list li.active {
+  border-color: #176e7d;
+  color: #176e7d;
+  background: #eff9f8;
+}
+
+.pipeline-list li.done {
+  border-color: #8dd5c4;
+  color: #278570;
+  background: #f1fcf8;
 }
 
 .eyebrow {
@@ -850,7 +895,7 @@ dialog::backdrop {
   }
 
   .demo-intro-actions {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .partner-grid {
@@ -931,6 +976,10 @@ dialog::backdrop {
   .demo-progress {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .pipeline-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .step {

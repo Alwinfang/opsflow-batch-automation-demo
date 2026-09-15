@@ -72,15 +72,10 @@ try {
   await page.getByText('授权分发').first().waitFor();
 
   await page.reload({ waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: '自动演示经营配置' }).click();
-  await page.getByRole('dialog', { name: '批量处理商品' }).waitFor({ state: 'visible', timeout: 3000 });
-  await page.getByText('当前批量任务 已完成').waitFor({ state: 'visible', timeout: 6000 });
-  await page.getByText('演示执行完成').waitFor();
-
-  await page.reload({ waitUntil: 'networkidle' });
-  await page.getByRole('button', { name: '自动演示调整筛选器' }).click();
+  await page.getByRole('button', { name: '启动全链路自动化演示' }).click();
   await page.getByRole('dialog', { name: '调整商品筛选器' }).waitFor({ state: 'visible', timeout: 3000 });
-  await page.getByText('筛选器调整完成').waitFor({ timeout: 5000 });
+  await page.getByRole('dialog', { name: '批量处理商品' }).waitFor({ state: 'visible', timeout: 7000 });
+  await page.getByText('全链路自动化演示已完成').waitFor({ timeout: 16000 });
   await page.getByText('显示 3 个模拟商品').waitFor();
 
   const screenshot = path.join(artifactsDir, 'e2e-success.png');
@@ -88,7 +83,7 @@ try {
   const summary = {
     ok: true,
     checkedAt: new Date().toISOString(),
-    workflows: ['batch configuration', 'authorization distribution', 'auto-play configuration', 'auto-play filter adjustment'],
+    workflows: ['batch configuration', 'authorization distribution', 'full-chain auto-play'],
     filteredProducts: 3,
     screenshot: 'artifacts/e2e-success.png',
   };

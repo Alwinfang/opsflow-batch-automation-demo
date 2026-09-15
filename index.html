@@ -47,6 +47,7 @@
           <div class="demo-intro-actions">
             <button class="button primary" id="start-config-demo" type="button">自动演示经营配置</button>
             <button class="button secondary" id="start-authorize-demo" type="button">自动演示授权分发</button>
+            <button class="button secondary" id="start-filter-demo" type="button">自动演示调整筛选器</button>
           </div>
           <div class="demo-progress" aria-label="当前演示状态">
             <span>演示状态</span>
@@ -286,6 +287,30 @@
         <button class="button secondary" id="previous-step" type="button" hidden>上一步</button>
         <button class="button primary" id="next-step" type="button">下一步</button>
         <button class="button primary" id="submit-task" type="button" hidden disabled>确认并创建任务</button>
+      </div>
+    </dialog>
+
+    <dialog id="filter-dialog" aria-labelledby="filter-dialog-title">
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">FILTER WORKFLOW</p>
+          <h2 id="filter-dialog-title">调整商品筛选器</h2>
+        </div>
+        <button class="icon-button" id="close-filter-dialog" type="button" aria-label="关闭筛选器演示" title="关闭">x</button>
+      </div>
+      <div class="filter-demo-body">
+        <p id="filter-demo-message">正在读取当前筛选条件...</p>
+        <ol class="filter-demo-steps" aria-label="筛选器调整步骤">
+          <li data-filter-step="1"><span>1</span>设定区域范围</li>
+          <li data-filter-step="2"><span>2</span>设定上架状态</li>
+          <li data-filter-step="3"><span>3</span>设定产品范围</li>
+          <li data-filter-step="4"><span>4</span>应用筛选结果</li>
+        </ol>
+        <div class="filter-preview">
+          <div><span>区域</span><strong id="filter-preview-region">全部区域</strong></div>
+          <div><span>状态</span><strong id="filter-preview-status">全部状态</strong></div>
+          <div><span>产品范围</span><strong id="filter-preview-scope">全部产品</strong></div>
+        </div>
       </div>
     </dialog>
 

@@ -41,19 +41,23 @@
         <section class="demo-intro" id="dashboard" aria-label="交互演示入口">
           <div class="demo-intro-copy">
             <p class="eyebrow">INTERACTIVE PLAYWRIGHT DEMO</p>
-            <h2>用两条可执行流程体验批量运营自动化</h2>
-            <p>演示会自动填充筛选条件并选中目标商品。随后可继续完成配置或授权、预览影响范围、输入确认短语并观察任务结果。</p>
+            <h2>一键执行商品运营全链路自动化</h2>
+            <p>演示会自动调整筛选器、选中目标商品、完成经营配置与授权分发，并以动态确认和任务记录模拟高风险批量操作的完整闭环。</p>
           </div>
           <div class="demo-intro-actions">
-            <button class="button primary" id="start-config-demo" type="button">自动演示经营配置</button>
-            <button class="button secondary" id="start-authorize-demo" type="button">自动演示授权分发</button>
-            <button class="button secondary" id="start-filter-demo" type="button">自动演示调整筛选器</button>
+            <button class="button primary" id="start-chain-demo" type="button">启动全链路自动化演示</button>
           </div>
           <div class="demo-progress" aria-label="当前演示状态">
             <span>演示状态</span>
             <strong id="demo-status">等待开始</strong>
-            <small id="demo-status-detail">选择一个流程，页面会自动执行筛选、确认和任务完成步骤。</small>
+            <small id="demo-status-detail">点击按钮后，页面会自动执行筛选、确认、配置、授权和任务完成步骤。</small>
           </div>
+          <ol class="pipeline-list" aria-label="自动化链路">
+            <li data-pipeline-stage="filter"><span>1</span>调整筛选器</li>
+            <li data-pipeline-stage="config"><span>2</span>经营配置</li>
+            <li data-pipeline-stage="authorize"><span>3</span>授权分发</li>
+            <li data-pipeline-stage="complete"><span>4</span>任务完成</li>
+          </ol>
         </section>
 
         <section class="metric-grid" aria-label="运营概览">

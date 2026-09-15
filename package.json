@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node server.mjs",
+    "dev": "node scripts/local-server.mjs",
     "test:e2e": "node scripts/run-demo.mjs",
     "capture": "node scripts/capture-dashboard.mjs"
   },

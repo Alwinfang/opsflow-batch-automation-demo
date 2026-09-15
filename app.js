@@ -23,8 +23,10 @@ const state = {
 const byId = (id) => document.getElementById(id);
 const productRows = byId('product-rows');
 const batchDialog = byId('batch-dialog');
+const filterDialog = byId('filter-dialog');
 const panels = [...document.querySelectorAll('[data-panel]')];
 const steps = [...document.querySelectorAll('.step')];
+const filterDemoSteps = [...document.querySelectorAll('[data-filter-step]')];
 
 function updateDemoStatus(title, detail) {
   byId('demo-status').textContent = title;
@@ -38,6 +40,21 @@ function clearDemoTimers() {
 
 function scheduleDemo(delay, callback) {
   state.demoTimers.push(window.setTimeout(callback, delay));
+}
+
+function setFilterDemoStep(step, message) {
+  filterDemoSteps.forEach((item) => {
+    const itemStep = Number(item.dataset.filterStep);
+    item.classList.toggle('active', itemStep === step);
+    item.classList.toggle('done', itemStep < step);
+  });
+  byId('filter-demo-message').textContent = message;
+}
+
+function setFilterPreview(region, status, scope) {
+  byId('filter-preview-region').textContent = region;
+  byId('filter-preview-status').textContent = status;
+  byId('filter-preview-scope').textContent = scope;
 }
 
 function selectedProducts() {
@@ -158,6 +175,42 @@ function startDemo(mode) {
     updateDemoStatus('正在提交异步任务', '动态确认短语校验通过，正在创建批量任务。');
   });
   scheduleDemo(3950, submitTask);
+}
+
+function startFilterDemo() {
+  clearDemoTimers();
+  state.selectedIds.clear();
+  renderProducts();
+  setFilterPreview('全部区域', '全部状态', '全部产品');
+  setFilterDemoStep(1, '正在读取当前筛选条件...');
+  filterDialog.showModal();
+  updateDemoStatus('筛选器正在自动调整', '系统将依次设定区域、上架状态和产品范围。');
+
+  scheduleDemo(650, () => {
+    byId('region').value = 'Asia';
+    setFilterPreview('亚洲', '全部状态', '全部产品');
+    setFilterDemoStep(1, '已将区域设为“亚洲”。');
+  });
+  scheduleDemo(1350, () => {
+    byId('status').value = 'active';
+    setFilterPreview('亚洲', '已启用', '全部产品');
+    setFilterDemoStep(2, '已将状态设为“已启用”。');
+  });
+  scheduleDemo(2050, () => {
+    byId('scope').value = 'single';
+    setFilterPreview('亚洲', '已启用', '单国家产品');
+    setFilterDemoStep(3, '已将产品范围设为“单国家产品”。');
+  });
+  scheduleDemo(2800, () => {
+    applyFilters();
+    setFilterDemoStep(4, `筛选完成，命中 ${state.filteredProducts.length} 个模拟商品。`);
+    updateDemoStatus('筛选器调整完成', `已定位 ${state.filteredProducts.length} 个可批量处理的商品。`);
+  });
+  scheduleDemo(3700, () => {
+    filterDialog.close();
+    byId('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast('筛选器演示完成', `当前列表已更新为 ${state.filteredProducts.length} 个商品。`);
+  });
 }
 
 function resetFilters() {
@@ -284,6 +337,7 @@ byId('filter-form').addEventListener('submit', applyFilters);
 byId('reset-filters').addEventListener('click', resetFilters);
 byId('start-config-demo').addEventListener('click', () => startDemo('config'));
 byId('start-authorize-demo').addEventListener('click', () => startDemo('authorize'));
+byId('start-filter-demo').addEventListener('click', startFilterDemo);
 byId('product-rows').addEventListener('change', (event) => {
   if (!event.target.matches('.row-check')) return;
   const { id } = event.target.dataset;
@@ -302,6 +356,11 @@ byId('clear-selection').addEventListener('click', () => {
 });
 byId('open-batch').addEventListener('click', openDialog);
 byId('close-dialog').addEventListener('click', closeDialog);
+byId('close-filter-dialog').addEventListener('click', () => {
+  clearDemoTimers();
+  filterDialog.close();
+  updateDemoStatus('筛选器演示已停止', '可重新选择任一自动演示流程。');
+});
 byId('previous-step').addEventListener('click', () => updateStep(state.step - 1));
 byId('next-step').addEventListener('click', () => {
   if (state.step === 2) renderPreview();

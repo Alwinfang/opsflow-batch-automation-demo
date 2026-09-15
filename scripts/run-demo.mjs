@@ -43,7 +43,7 @@ async function completeWorkflow(page, mode) {
   await page.getByText('当前批量任务 已完成').waitFor({ state: 'visible', timeout: 5000 });
 }
 
-const server = spawn(process.execPath, ['server.mjs'], {
+const server = spawn(process.execPath, ['scripts/local-server.mjs'], {
   cwd: root,
   env: { ...process.env, PORT: String(port) },
   stdio: 'ignore',
@@ -71,12 +71,18 @@ try {
   await completeWorkflow(page, 'authorize');
   await page.getByText('授权分发').first().waitFor();
 
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.getByRole('button', { name: '自动演示经营配置' }).click();
+  await page.getByRole('dialog', { name: '批量处理商品' }).waitFor({ state: 'visible', timeout: 3000 });
+  await page.getByText('当前批量任务 已完成').waitFor({ state: 'visible', timeout: 6000 });
+  await page.getByText('演示执行完成').waitFor();
+
   const screenshot = path.join(artifactsDir, 'e2e-success.png');
   await page.screenshot({ path: screenshot, fullPage: true });
   const summary = {
     ok: true,
     checkedAt: new Date().toISOString(),
-    workflows: ['batch configuration', 'authorization distribution'],
+    workflows: ['batch configuration', 'authorization distribution', 'auto-play configuration'],
     filteredProducts: 3,
     screenshot: 'artifacts/e2e-success.png',
   };

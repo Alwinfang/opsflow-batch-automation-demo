@@ -14,6 +14,7 @@ const state = {
   taskMode: 'config',
   phrase: '',
   demoTimers: [],
+  chainRunning: false,
   activity: [
     { name: '价格策略校验', meta: '4 个商品 · 已完成', time: '09:18', status: 'done' },
     { name: '合作伙伴授权检查', meta: '2 个商品 · 等待确认', time: '昨天', status: 'pending' },
@@ -27,6 +28,7 @@ const filterDialog = byId('filter-dialog');
 const panels = [...document.querySelectorAll('[data-panel]')];
 const steps = [...document.querySelectorAll('.step')];
 const filterDemoSteps = [...document.querySelectorAll('[data-filter-step]')];
+const pipelineStages = [...document.querySelectorAll('[data-pipeline-stage]')];
 
 function updateDemoStatus(title, detail) {
   byId('demo-status').textContent = title;
@@ -40,6 +42,14 @@ function clearDemoTimers() {
 
 function scheduleDemo(delay, callback) {
   state.demoTimers.push(window.setTimeout(callback, delay));
+}
+
+function updatePipeline(stage) {
+  const currentIndex = pipelineStages.findIndex((item) => item.dataset.pipelineStage === stage);
+  pipelineStages.forEach((item, index) => {
+    item.classList.toggle('active', index === currentIndex);
+    item.classList.toggle('done', index < currentIndex);
+  });
 }
 
 function setFilterDemoStep(step, message) {
@@ -135,68 +145,65 @@ function applyFilters(event) {
   showToast('筛选已更新', `当前命中 ${state.filteredProducts.length} 个模拟商品`);
 }
 
-function startDemo(mode) {
-  clearDemoTimers();
-  byId('keyword').value = '';
-  byId('region').value = 'Asia';
-  byId('status').value = 'active';
-  byId('scope').value = 'single';
-  applyFilters();
-
+function prepareSelectedProducts() {
   state.filteredProducts.forEach((product) => state.selectedIds.add(product.id));
   renderProducts();
+}
 
+function setTaskMode(mode) {
   state.taskMode = mode;
   document.querySelector(`input[name="mode"][value="${mode}"]`).checked = true;
   updateModeFields();
-  updateDemoStatus(
-    mode === 'config' ? '经营配置正在自动执行' : '授权分发正在自动执行',
-    `已筛选并选中 ${state.filteredProducts.length} 个亚洲单国家商品，即将进入批量操作流程。`,
-  );
-  showToast('自动演示已启动', '将依次展示筛选、配置、预览确认和任务完成。');
-  byId('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
-  scheduleDemo(550, () => {
+function scheduleBatchWorkflow(mode, startAt) {
+  scheduleDemo(startAt, () => {
+    setTaskMode(mode);
+    prepareSelectedProducts();
     openDialog();
-    updateDemoStatus('正在确认影响范围', '已打开批量操作弹窗，正在核对目标商品和 SKU 数量。');
+    updatePipeline(mode);
+    updateDemoStatus(
+      mode === 'config' ? '正在执行经营配置' : '正在执行授权分发',
+      `已进入${modeLabel()}流程，正在核对 ${selectedProducts().length} 个目标商品。`,
+    );
   });
-  scheduleDemo(1450, () => {
+  scheduleDemo(startAt + 900, () => {
     updateStep(2);
     updateDemoStatus('正在设置操作参数', `正在填充${modeLabel()}所需的模拟参数。`);
   });
-  scheduleDemo(2400, () => {
+  scheduleDemo(startAt + 1800, () => {
     renderPreview();
     updateStep(3);
     updateDemoStatus('正在生成执行预览', '系统已展示影响范围和动态确认短语。');
   });
-  scheduleDemo(3300, () => {
+  scheduleDemo(startAt + 2700, () => {
     byId('confirmation-input').value = state.phrase;
     byId('confirmation-input').dispatchEvent(new Event('input', { bubbles: true }));
     updateDemoStatus('正在提交异步任务', '动态确认短语校验通过，正在创建批量任务。');
   });
-  scheduleDemo(3950, submitTask);
+  scheduleDemo(startAt + 3350, submitTask);
 }
 
-function startFilterDemo() {
-  clearDemoTimers();
+function scheduleFilterWorkflow() {
   state.selectedIds.clear();
   renderProducts();
   setFilterPreview('全部区域', '全部状态', '全部产品');
   setFilterDemoStep(1, '正在读取当前筛选条件...');
   filterDialog.showModal();
+  updatePipeline('filter');
   updateDemoStatus('筛选器正在自动调整', '系统将依次设定区域、上架状态和产品范围。');
 
-  scheduleDemo(650, () => {
+  scheduleDemo(700, () => {
     byId('region').value = 'Asia';
     setFilterPreview('亚洲', '全部状态', '全部产品');
     setFilterDemoStep(1, '已将区域设为“亚洲”。');
   });
-  scheduleDemo(1350, () => {
+  scheduleDemo(1400, () => {
     byId('status').value = 'active';
     setFilterPreview('亚洲', '已启用', '全部产品');
     setFilterDemoStep(2, '已将状态设为“已启用”。');
   });
-  scheduleDemo(2050, () => {
+  scheduleDemo(2100, () => {
     byId('scope').value = 'single';
     setFilterPreview('亚洲', '已启用', '单国家产品');
     setFilterDemoStep(3, '已将产品范围设为“单国家产品”。');
@@ -206,10 +213,30 @@ function startFilterDemo() {
     setFilterDemoStep(4, `筛选完成，命中 ${state.filteredProducts.length} 个模拟商品。`);
     updateDemoStatus('筛选器调整完成', `已定位 ${state.filteredProducts.length} 个可批量处理的商品。`);
   });
-  scheduleDemo(3700, () => {
+  scheduleDemo(3650, () => {
     filterDialog.close();
     byId('products').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    showToast('筛选器演示完成', `当前列表已更新为 ${state.filteredProducts.length} 个商品。`);
+    showToast('筛选器步骤完成', `当前列表已更新为 ${state.filteredProducts.length} 个商品。`);
+  });
+}
+
+function startChainDemo() {
+  clearDemoTimers();
+  state.chainRunning = true;
+  byId('keyword').value = '';
+  byId('region').value = 'all';
+  byId('status').value = 'all';
+  byId('scope').value = 'all';
+  updateDemoStatus('全链路自动化已启动', '将依次执行筛选器调整、经营配置、授权分发和任务完成回写。');
+  showToast('自动化链路已启动', '预计 13 秒完成全部模拟步骤。');
+  scheduleFilterWorkflow();
+  scheduleBatchWorkflow('config', 4300);
+  scheduleBatchWorkflow('authorize', 8850);
+  scheduleDemo(13350, () => {
+    state.chainRunning = false;
+    updatePipeline('complete');
+    updateDemoStatus('全链路自动化演示已完成', '筛选、经营配置与授权分发均已完成，并已写入任务记录。');
+    showToast('全链路执行完成', '已完成筛选、经营配置、授权分发和结果留存。');
   });
 }
 
@@ -326,8 +353,13 @@ function submitTask() {
     renderProducts();
     closeDialog();
     byId('submit-task').textContent = '确认并创建任务';
-    updateDemoStatus('演示执行完成', completedMeta);
-    showToast('当前批量任务 已完成', completedMeta);
+    if (!state.chainRunning) {
+      updatePipeline('complete');
+      updateDemoStatus('演示执行完成', completedMeta);
+      showToast('当前批量任务 已完成', completedMeta);
+      return;
+    }
+    showToast('链路阶段已完成', completedMeta);
   }, 850);
 
   showToast('任务已创建', action);
@@ -335,9 +367,7 @@ function submitTask() {
 
 byId('filter-form').addEventListener('submit', applyFilters);
 byId('reset-filters').addEventListener('click', resetFilters);
-byId('start-config-demo').addEventListener('click', () => startDemo('config'));
-byId('start-authorize-demo').addEventListener('click', () => startDemo('authorize'));
-byId('start-filter-demo').addEventListener('click', startFilterDemo);
+byId('start-chain-demo').addEventListener('click', startChainDemo);
 byId('product-rows').addEventListener('change', (event) => {
   if (!event.target.matches('.row-check')) return;
   const { id } = event.target.dataset;
@@ -359,6 +389,7 @@ byId('close-dialog').addEventListener('click', closeDialog);
 byId('close-filter-dialog').addEventListener('click', () => {
   clearDemoTimers();
   filterDialog.close();
+  state.chainRunning = false;
   updateDemoStatus('筛选器演示已停止', '可重新选择任一自动演示流程。');
 });
 byId('previous-step').addEventListener('click', () => updateStep(state.step - 1));

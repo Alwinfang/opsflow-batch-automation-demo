@@ -699,6 +699,87 @@ dialog::backdrop {
   margin-top: 7px;
 }
 
+.filter-demo-body {
+  padding: 22px;
+}
+
+.filter-demo-body > p {
+  margin-bottom: 18px;
+  color: #486581;
+  font-size: 14px;
+}
+
+.filter-demo-steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.filter-demo-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border: 1px solid #dce4ee;
+  color: #627d98;
+  background: #f8fafc;
+  font-size: 13px;
+}
+
+.filter-demo-steps span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.filter-demo-steps li.active {
+  border-color: #176e7d;
+  color: #176e7d;
+  background: #eff9f8;
+}
+
+.filter-demo-steps li.done {
+  border-color: #8dd5c4;
+  color: #278570;
+  background: #f1fcf8;
+}
+
+.filter-preview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.filter-preview > div {
+  padding: 12px;
+  border: 1px solid #dce4ee;
+  background: #ffffff;
+}
+
+.filter-preview span,
+.filter-preview strong {
+  display: block;
+}
+
+.filter-preview span {
+  color: #829ab1;
+  font-size: 11px;
+}
+
+.filter-preview strong {
+  margin-top: 5px;
+  color: #243b53;
+  font-size: 13px;
+}
+
 .confirmation {
   display: block;
   margin-top: 15px;
@@ -769,7 +850,7 @@ dialog::backdrop {
   }
 
   .demo-intro-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .partner-grid {
@@ -813,6 +894,7 @@ dialog::backdrop {
   .form-grid,
   .scope-summary,
   .preview-grid,
+  .filter-preview,
   .partner-grid {
     grid-template-columns: 1fr;
   }
